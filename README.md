@@ -1,36 +1,156 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NxthPress
 
-## Getting Started
+**NxthPress** is an open-source, block-based CMS built with **Next.js (App Router)**, **Prisma + PostgreSQL**, **Auth.js v5**, and **Tailwind CSS**.  
+It uses **React Server Components by default** (with Client Components only where needed), and features a modular page builder, blog engine, and live SEO previews.
 
-First, run the development server:
+---
+
+## Table of Contents
+
+- [Features](#features)  
+- [Tech Stack](#tech-stack)  
+- [Quick Start](#quick-start)  
+- [Environment Variables](#environment-variables)  
+- [Page Builder](#page-builder)  
+- [Blog](#blog)  
+- [Development Scripts](#development-scripts)  
+- [Deployment](#deployment)  
+- [Contributing](#contributing)  
+- [License](#license)  
+
+---
+
+## Features
+
+- ⚡ **Server Actions for CRUD** (no API routes)  
+- 🧱 **Page Builder** with pluggable blocks + live SEO preview  
+- ✍️ **Blog system** with tags, pagination, Markdown, and per-post SEO  
+- 🔍 **Draft Preview Mode** with token-based access  
+- ☁️ **Cloudinary integration** for file/image uploads  
+- 🐳 **Docker Compose setup** for PostgreSQL  
+- 🎨 Built with **Tailwind CSS 4**  
+- 🚀 Optimized for **Vercel deployment** (ISR enabled by default)  
+
+---
+
+## Tech Stack
+
+| Category       | Technology |
+|----------------|------------|
+| **Framework**  | Next.js 15 (App Router, React Server Components, ISR) |
+| **Language**   | TypeScript |
+| **UI / Styling** | Tailwind CSS 4 |
+| **Database**   | PostgreSQL with Prisma ORM |
+| **Auth**       | Auth.js v5 (NextAuth) |
+| **File Storage** | Cloudinary |
+| **Markdown**   | react-markdown, remark-gfm, rehype-raw |
+| **CMS**        | Custom Page Builder with pluggable blocks + SEO |
+| **Deployment** | Vercel or any Node.js host |
+| **Containerization** | Docker Compose (Postgres) |
+
+---
+
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# clone the repo
+git clone https://github.com/shalomtaiwo/nxthpress.git
+cd nxthpress
+
+# copy and edit env vars
+cp .env.example .env
+
+# install dependencies
+pnpm install
+
+# setup database
+pnpm db:up
+pnpm prisma:migrate
+pnpm prisma:generate
+pnpm prisma:seed   # optional demo content
+
+# run development server
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Now visit [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Variables
 
-## Learn More
+Copy `.env.example` → `.env` and set values:
 
-To learn more about Next.js, take a look at the following resources:
+| Name | Description |
+|------|-------------|
+| `DATABASE_URL` | Prisma/Postgres connection string |
+| `AUTH_SECRET`, `AUTH_URL` | Required for Auth.js (NextAuth v5) |
+| `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Cloudinary credentials for file uploads |
+| `PREVIEW_SECRET` | Secret token for Draft Preview mode |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Page Builder
 
-## Deploy on Vercel
+- 📂 **Location:** `src/components/page-builder/`  
+- 🧩 **Blocks included:** FeatureGrid, TwoColumn, Testimonial, FAQ, CTA Banner, Video Embed, SEO, and more  
+- ✏️ **Editing:** `PageBuilder.tsx` (Client Component) manages block JSON arrays and outputs via hidden `<input name="blocks">`  
+- 🎨 **Rendering:** `PageRenderer.tsx` (Server Component) maps block types to renderers in `src/components/page-renderer/`  
+- 🔧 **Extending:** Add new blocks by creating:  
+  - an editor in `page-builder/editors/`  
+  - a renderer in `page-renderer/blocks/`  
+  - register both in their `registry.ts` files  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Blog
+
+- 🗂 **Routes:**  
+  - `/blog` → blog index (with pagination + optional `?tag=` filter)  
+  - `/blog/[slug]` → individual post  
+- 📝 **Content:** Markdown via `react-markdown`, `remark-gfm`, and `rehype-raw`  
+- ⚙️ **Admin Panel:**  
+  - CRUD under `/admin/posts`  
+  - Rich Markdown editor  
+  - Tag management  
+  - Cloudinary cover-image uploads  
+- 📈 **SEO:** per-post metadata (`seoTitle`, `seoDescription`, `seoImageUrl`) with live preview  
+
+---
+
+## Development Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `pnpm dev` | Start Next.js in development mode |
+| `pnpm build` | Build for production |
+| `pnpm start` | Run production build |
+| `pnpm lint` | Run ESLint |
+| `pnpm typecheck` | Run TypeScript type checking |
+| `pnpm db:up` / `pnpm db:down` | Start/stop Postgres (Docker) |
+| `pnpm prisma:migrate` | Apply Prisma schema migrations |
+| `pnpm prisma:generate` | Generate Prisma client |
+| `pnpm prisma:studio` | Open Prisma Studio |
+| `pnpm prisma:seed` | Seed demo data into database |
+
+---
+
+## Deployment
+
+- Use a managed PostgreSQL (e.g., Supabase, Neon, RDS) or self-hosted instance  
+- Set all required **environment variables** on your host  
+- Run `prisma migrate deploy` during deployment to apply schema changes  
+- Recommended: **Vercel** (ISR enabled, `revalidate = 60`)  
+
+---
+
+## Contributing
+
+Contributions are welcome!  
+Feel free to open issues or submit PRs to improve NxthPress.  
+
+---
+
+## License
+
+MIT License © 2025 NxthPress contributors.  

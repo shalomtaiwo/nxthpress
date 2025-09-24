@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  excerpt        String?
+  coverImageUrl  String?
+  contentMD      String
+  published      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  seoTitle       String?
+  seoDescription String?
+  seoImageUrl    String?
+
+  tags TagOnPost[]
+}
+
+model Tag {
+  id    String       @id @default(cuid())
+  name  String       @unique
+  posts TagOnPost[]
+}
+
+model TagOnPost {
+  postId String
+  tagId  String
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+}
+enum MenuLocation {
+  SITE
+  ADMIN
+}
+
+model MenuItem {
+  id        String        @id @default(cuid())
+  label     String
+  href      String
+  location  MenuLocation  @default(SITE)
+  order     Int           @default(0)
+  visible   Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  path      String   @unique
+  isHome    Boolean  @default(false)
+  published Boolean  @default(false)
+  blocks    Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
