@@ -84,8 +84,12 @@ Copy `.env.example` → `.env` and set values:
 | Name | Description |
 |------|-------------|
 | `DATABASE_URL` | Prisma/Postgres connection string |
-| `AUTH_SECRET`, `AUTH_URL` | Required for Auth.js (NextAuth v5) |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT` | Local Postgres container configuration (used in Docker + DATABASE_URL) |
+| `AUTH_SECRET` | Required for Auth.js (NextAuth v5) |
+| `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET` | GitHub OAuth credentials for Auth.js |
+| `AUTH_TRUST_HOST` | Set `true` for local/dev environments |
 | `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Cloudinary credentials for file uploads |
+| `CLOUDINARY_UPLOAD_FOLDER` | Default Cloudinary folder for uploads |
 | `PREVIEW_SECRET` | Secret token for Draft Preview mode |
 
 ---
